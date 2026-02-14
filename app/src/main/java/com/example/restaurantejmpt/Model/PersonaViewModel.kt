@@ -41,10 +41,11 @@ class PersonaViewModel : ViewModel() {
             .addOnCompleteListener { task ->
                 isLoading.value = false
                 if (task.isSuccessful) {
+                    val rolesIniciales = arrayListOf("CLIENTE")
                     val nuevaPersona = hashMapOf(
                         "email" to email,
                         "contraseña" to contraseña,
-                        "rol" to "CLIENTE"
+                        "roles" to rolesIniciales
                     )
                     //Creacion de la coleccion de usuarios
                     db.collection("usuarios") // Esta es la colección que busca tu función obtenerTodosLosUsuarios
