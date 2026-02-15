@@ -48,9 +48,8 @@ import com.example.restaurantejmpt.Model.Rol
 import com.example.restaurantejmpt.Model.Usuario
 
 class MainActivity : ComponentActivity() {
+    //Instancias de ViewModels compartidas
     private val adminViewModel: AdminViewModel by viewModels()
-
-    // Instancia del ViewModel compartida
     private val personaViewModel: PersonaViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,10 +57,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RestauranteJMPTTheme {
-                //Listado(adminViewModel)
-                //FormularioUsuario(adminViewModel)
                 val navController = rememberNavController()
-
                 NavHost(
                     navController = navController,
                     startDestination = Rutas.LOGIN
@@ -84,207 +80,16 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(Rutas.REGISTER) {
                     }
-                }
-            }
-            }
-        }
-    }
-
-@Composable
-fun Listado(viewModel: AdminViewModel = AdminViewModel()){
-    val usuarios = viewModel.usuarios //Observa la lista desde el ViewModel
-    val error by viewModel.errorMessage.collectAsState()
-    var usuarioAEliminar by remember { mutableStateOf<Usuario?>(null) }
-
-    LaunchedEffect(Unit) {
-        viewModel.loadUsuarios()
-    }
-
-    Column(modifier = Modifier.padding(16.dp)) {
-
-        Text(
-            text = "Usuarios Registrados",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        //Muestra mensaje de error o lista vacía
-        if (error != null) {
-            Text(
-                text = "Error: $error",
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall
-            )
-        } else if (usuarios.isEmpty()) {
-            Text(
-                text = "Lista vacía",
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall
-            )
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 400.dp)
-                    .border(1.dp, MaterialTheme.colorScheme.primary)
-                    .padding(8.dp)
-            ) {
-                items(usuarios) { usuario ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Column {
-                                Text(
-                                    text = "Email: ${usuario.email}",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                                Text(
-                                    text = "Roles: ${
-                                        usuario.roles.joinToString { it }
-                                    }",
-                                    style = MaterialTheme.typography.bodySmall
-                                )
-                                Button(onClick = {
-                                    usuarioAEliminar = usuario
-                                }) {
-                                    Text("Borrar")
-                                }
-                            }
-                        }
+                    composable(Rutas.UPDATE + "/{uid}") { backStackEntry ->
+                        //Recupero la uid del usuario a modificar y se la mando como un parametro más
+                        val uid = backStackEntry.arguments?.getString("uid") ?: ""
+                        ModificarUsuario(uid, adminViewModel)
+                    }
+                    composable(Rutas.INSERT) {
+                        FormularioUsuario(adminViewModel)
                     }
                 }
             }
-        }
-    }
-    usuarioAEliminar?.let { usuario ->
-
-        AlertDialog(
-            onDismissRequest = { usuarioAEliminar = null },
-            title = { Text("Confirmar borrado") },
-            text = { Text("¿Eliminar a ${usuario.email}?") },
-
-            confirmButton = {
-                Button(onClick = {
-                    viewModel.borrarUsuario(usuario.id)
-                    usuarioAEliminar = null
-                }) {
-                    Text("Sí")
-                }
-            },
-
-            dismissButton = {
-                Button(onClick = {
-                    usuarioAEliminar = null
-                }) {
-                    Text("No")
-                }
-            }
-        )
-    }
-}
-
-@Composable
-fun FormularioUsuario(viewModel: AdminViewModel = AdminViewModel()) {
-    var email by remember { mutableStateOf("") }
-    var contrasenia by remember { mutableStateOf("") }
-    val rolesSeleccionados = remember { mutableStateListOf<String>() }
-    var emailError by remember { mutableStateOf(false) }
-    var contraError by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-
-        Text(
-            text = "Registro",
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-        //Textfield para el email
-        OutlinedTextField(
-            value = email,
-            onValueChange = {
-                email = it
-                emailError = it.isBlank()
-            },
-            label = { Text("Email") },
-            isError = emailError,
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        if (emailError) {
-            Text(
-                text = "El email no puede estar vacío",
-                color = MaterialTheme.colorScheme.error
-            )
-        }
-
-        //Textfield para la contraseña
-        OutlinedTextField(
-            value = contrasenia,
-            onValueChange = {
-                contrasenia = it
-                contraError = it.length < 6
-            },
-            label = { Text("Contraseña") },
-            isError = contraError,
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        if (contraError) {
-            Text(
-                text = "Mínimo 6 caracteres",
-                color = MaterialTheme.colorScheme.error
-            )
-        }
-
-        Text("Roles")
-
-        Rol.entries.forEach { rol ->
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(
-                    checked = rolesSeleccionados.contains(rol.name),
-                    onCheckedChange = { checked ->
-                        if (checked) {
-                            rolesSeleccionados.add(rol.name)
-                        } else {
-                            rolesSeleccionados.remove(rol.name)
-                        }
-                    }
-                )
-                Text(rol.name)
-            }
-        }
-
-        Button(onClick = {
-            if (rolesSeleccionados.isEmpty()) {
-                //Validación en caso de que se queden vacíos los roles
-                return@Button
-            }
-
-            viewModel.registrarUsuario(
-                email = email,
-                contrasenia = contrasenia,
-                roles = rolesSeleccionados
-            )
-        }) {
-            Text("Registrar")
         }
     }
 }
