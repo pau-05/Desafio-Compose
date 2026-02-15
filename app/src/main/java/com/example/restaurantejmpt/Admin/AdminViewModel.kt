@@ -26,7 +26,7 @@ class AdminViewModel : ViewModel() {
     // -------------------------------
     // Registrar un nuevo usuario con UID como documentId
     // -------------------------------
-    fun registrarUsuario(email: String, contrasenia: String, roles: List<Rol>) {
+    fun registrarUsuario(email: String, contrasenia: String, roles: List<String>) {
         isLoading.value = true
         errorMessage.value = null
 
@@ -76,7 +76,7 @@ class AdminViewModel : ViewModel() {
                         id = doc.id, // el UID
                         email = doc.getString("email") ?: "",
                         contrasenia = doc.getString("contrasenia") ?: "",
-                        roles = rolesFirestore.map { Rol.valueOf(it) }
+                        roles = rolesFirestore
                     )
                     _usuarios.add(usuario)
                 }
@@ -97,7 +97,7 @@ class AdminViewModel : ViewModel() {
                 mapOf(
                     "email" to usuario.email,
                     "contrasenia" to usuario.contrasenia,
-                    "roles" to usuario.roles.map { it.name }
+                    "roles" to usuario.roles
                 )
             )
             .addOnSuccessListener {

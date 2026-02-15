@@ -4,9 +4,15 @@
       <root url="jar://$USER_HOME$/.gradle/caches/8.13/transforms/a0d00fa5086e0bf97df1eca2d111799f/transformed/biometric-1.1.0/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
+<<<<<<< HEAD
       <root url="file://$USER_HOME$/.gradle/caches/8.13/transforms/a0d00fa5086e0bf97df1eca2d111799f/transformed/biometric-1.1.0/res" />
       <root url="jar://$USER_HOME$/.gradle/caches/8.13/transforms/a0d00fa5086e0bf97df1eca2d111799f/transformed/biometric-1.1.0/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/8.13/transforms/a0d00fa5086e0bf97df1eca2d111799f/transformed/biometric-1.1.0/AndroidManifest.xml" />
+=======
+      <root url="file://$USER_HOME$/.gradle/caches/8.13/transforms/a0d00fa5086e0bf97df1eca2d111799f/transformed/biometric-1.1.0/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/8.13/transforms/a0d00fa5086e0bf97df1eca2d111799f/transformed/biometric-1.1.0/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/8.13/transforms/a0d00fa5086e0bf97df1eca2d111799f/transformed/biometric-1.1.0/jars/classes.jar!/" />
+>>>>>>> 58ac599cb47083844919fa33ebb7400bb4efb61b
     </CLASSES>
     <JAVADOC />
     <SOURCES>

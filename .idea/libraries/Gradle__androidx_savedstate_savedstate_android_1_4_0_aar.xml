@@ -2,8 +2,13 @@
   <library name="Gradle: androidx.savedstate:savedstate-android:1.4.0@aar" external-system-id="GRADLE">
     <CLASSES>
       <root url="file://$USER_HOME$/.gradle/caches/8.13/transforms/8d47443e822a2471902b6784a4e3690a/transformed/savedstate/AndroidManifest.xml" />
+<<<<<<< HEAD
       <root url="file://$USER_HOME$/.gradle/caches/8.13/transforms/8d47443e822a2471902b6784a4e3690a/transformed/savedstate/res" />
       <root url="jar://$USER_HOME$/.gradle/caches/8.13/transforms/8d47443e822a2471902b6784a4e3690a/transformed/savedstate/jars/classes.jar!/" />
+=======
+      <root url="jar://$USER_HOME$/.gradle/caches/8.13/transforms/8d47443e822a2471902b6784a4e3690a/transformed/savedstate/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/8.13/transforms/8d47443e822a2471902b6784a4e3690a/transformed/savedstate/res" />
+>>>>>>> 58ac599cb47083844919fa33ebb7400bb4efb61b
     </CLASSES>
     <JAVADOC />
     <SOURCES>
