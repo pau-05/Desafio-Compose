@@ -25,8 +25,8 @@ class PersonaViewModel : ViewModel() {
     val errorMessage = MutableStateFlow<String?>(null)
 
     // Lista observable de personas
-    private val _personas = mutableStateListOf<Persona>()
-    val personas: List<Persona> = _personas
+    private val _personas = mutableStateListOf<Usuario>()
+    val personas: List<Usuario> = _personas
     val loginSuccess = MutableStateFlow(false)
     val isGoogleLogin = MutableStateFlow(false)
 
@@ -42,14 +42,17 @@ class PersonaViewModel : ViewModel() {
                 isLoading.value = false
                 if (task.isSuccessful) {
                     val rolesIniciales = arrayListOf("CLIENTE")
-                    val nuevaPersona = hashMapOf(
-                        "email" to email,
-                        "contraseña" to contraseña,
-                        "roles" to rolesIniciales
-                    )
+                    val uid = task.result?.user?.uid
+                    if (uid != null) {
+                        val nuevaPersona = hashMapOf(
+                            "email" to email,
+                            "contraseña" to contraseña,
+                            "roles" to rolesIniciales
+                        )
+
                     //Creacion de la coleccion de usuarios
                     db.collection("usuarios") // Esta es la colección que busca tu función obtenerTodosLosUsuarios
-                        .document(email) // Usamos el email como ID único
+                        .document(uid)
                         .set(nuevaPersona)
                         .addOnSuccessListener {
                             Log.d("Firestore", "Usuario con rol CLIENTE guardado correctamente")
@@ -57,6 +60,7 @@ class PersonaViewModel : ViewModel() {
                             loginSuccess.value = true
                             isLoading.value = false
                         }
+                    }
                 } else {
                     isLoading.value = false
                     errorMessage.value = task.exception?.message
