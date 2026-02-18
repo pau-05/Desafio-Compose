@@ -75,8 +75,8 @@ fun Listado(viewModel: AdminViewModel = AdminViewModel(), navController: NavCont
                             .padding(vertical = 4.dp)
                             .combinedClickable(
                                 onClick = {
-                                    //Click normal -> editar
-                                    navController.navigate(Rutas.UPDATE + "/${usuario.id}")
+                                    viewModel.seleccionarUsuario(usuario) // Guardamos el objeto entero
+                                    navController.navigate(Rutas.UPDATE)
                                 },
 
                                 onLongClick = {

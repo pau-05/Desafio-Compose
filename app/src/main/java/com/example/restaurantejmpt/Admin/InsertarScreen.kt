@@ -105,7 +105,6 @@ fun FormularioUsuario(viewModel: AdminViewModel = AdminViewModel()) {
                 //Validación en caso de que se queden vacíos los roles
                 return@Button
             }
-
             viewModel.registrarUsuario(
                 email = email,
                 contrasenia = contrasenia,

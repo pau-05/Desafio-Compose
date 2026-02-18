@@ -57,6 +57,7 @@
         implementation(libs.googleid)
         implementation(libs.firebase.firestore)
         implementation(libs.androidx.compose.foundation.layout)
+        implementation(libs.androidx.navigation.runtime.ktx)
         //    implementation(libs.androidx.navigation.safe.args.generator)
         testImplementation(libs.junit)
         androidTestImplementation(libs.androidx.junit)

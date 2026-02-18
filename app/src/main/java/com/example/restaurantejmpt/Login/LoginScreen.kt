@@ -11,19 +11,20 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.example.restaurantejmpt.Model.PersonaViewModel
+import com.example.restaurantejmpt.Model.Rol
 
 @Composable
 fun LoginScreen(
     loginViewModel: PersonaViewModel,
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: (Rol) -> Unit
 ) {
     val context = LocalContext.current
-
     // Observamos el estado del ViewModel
     val isLoading by loginViewModel.isLoading.collectAsState()
     val loginSuccess by loginViewModel.loginSuccess.collectAsState()
     val errorMessage by loginViewModel.errorMessage.collectAsState()
-
+    val roles by loginViewModel.userRoles.collectAsState()
+    var showRoleDialog by remember { mutableStateOf(false) }
     // Estados locales para el formulario
     var email by remember { mutableStateOf(TextFieldValue("")) }
     var password by remember { mutableStateOf(TextFieldValue("")) }
@@ -104,14 +105,40 @@ fun LoginScreen(
         // Navegación al tener éxito
         LaunchedEffect(loginSuccess) {
             if (loginSuccess) {
+
                 val mensaje = if (isRegistering) {
-                    "¡Registro completado con éxito!" // Toast para registro
+                    "¡Registro completado con éxito!"
                 } else {
-                    "¡Inicio de sesión correcto!" // Toast para login
+                    "¡Inicio de sesión correcto!"
                 }
+
                 Toast.makeText(context, mensaje, Toast.LENGTH_SHORT).show()
-                onLoginSuccess()
+                showRoleDialog = true
             }
+        }
+        if (showRoleDialog && roles.isNotEmpty()) {
+            AlertDialog(
+                onDismissRequest = { },
+                title = { Text("Selecciona tu rol") },
+                text = {
+                    Column {
+                        roles.forEach { rol ->
+                            Button(
+                                onClick = {
+                                    showRoleDialog = false
+                                    onLoginSuccess(rol) //  aquí navegamos
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp)
+                            ) {
+                                Text(rol.name)
+                            }
+                        }
+                    }
+                },
+                confirmButton = {}
+            )
         }
     }
 }

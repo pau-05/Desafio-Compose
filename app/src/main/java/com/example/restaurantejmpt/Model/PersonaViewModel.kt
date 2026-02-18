@@ -13,6 +13,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlin.text.isNotEmpty
 
 class PersonaViewModel : ViewModel() {
@@ -24,6 +25,8 @@ class PersonaViewModel : ViewModel() {
     val isLoading = MutableStateFlow(false)
     val errorMessage = MutableStateFlow<String?>(null)
 
+    private val _userRoles = MutableStateFlow<List<Rol>>(emptyList())
+    val userRoles: StateFlow<List<Rol>> = _userRoles
     // Lista observable de personas
     private val _personas = mutableStateListOf<Usuario>()
     val personas: List<Usuario> = _personas
@@ -77,7 +80,7 @@ class PersonaViewModel : ViewModel() {
             .addOnCompleteListener { task ->
                 isLoading.value = false
                 if (task.isSuccessful) {
-                    loginSuccess.value = true
+                    obtenerRolesUsuario()
                 } else {
                     errorMessage.value = task.exception?.message
                 }
@@ -92,10 +95,33 @@ class PersonaViewModel : ViewModel() {
             errorMessage.value = null
             isLoading.value = false
 
-            // Si no usas Google Login, puedes eliminar o ignorar esta variable
             isGoogleLogin.value = false
 
             Log.d(TAG, "Sesión cerrada correctamente")
     }
+    fun obtenerRolesUsuario() {
+        val uid = auth.currentUser?.uid ?: return
+        db.collection("usuarios")
+            .document(uid)
+            .get()
+            .addOnSuccessListener { document ->
+
+                if (document.exists()) {
+
+                    val rolesString = document.get("roles") as? List<*> ?: emptyList<Any>()
+
+                    val rolesConvertidos = rolesString.mapNotNull { nombre ->
+                        Rol.values().find { it.name == nombre.toString() }
+                    }
+
+                    _userRoles.value = rolesConvertidos
+                    loginSuccess.value = true
+                }
+            }
+            .addOnFailureListener {
+                errorMessage.value = "Error obteniendo roles"
+            }
+    }
+
     fun getCurrentUser(): FirebaseUser? = auth.currentUser
 }

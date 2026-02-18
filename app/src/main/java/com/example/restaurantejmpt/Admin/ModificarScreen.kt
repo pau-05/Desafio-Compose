@@ -27,11 +27,11 @@ import androidx.compose.ui.unit.dp
 import com.example.restaurantejmpt.Model.Rol
 
 @Composable
-fun ModificarUsuario(uid: String,viewModel: AdminViewModel = AdminViewModel()){
+fun ModificarUsuario(viewModel: AdminViewModel = AdminViewModel()){
     val context = LocalContext.current
 
     //Recupero el usuario del listado previo
-    val usuario = viewModel.usuarios.find { it.id == uid }
+    val usuario by viewModel.usuarioSeleccionado.collectAsState()
 
     //En caso de error:
     if (usuario == null) {
@@ -40,11 +40,11 @@ fun ModificarUsuario(uid: String,viewModel: AdminViewModel = AdminViewModel()){
         }
     } else {
         //Recupero los valores originales para los campos
-        var email by remember { mutableStateOf(usuario.email) }
-        var contrasenia by remember { mutableStateOf(usuario.contrasenia) }
+        var email by remember { mutableStateOf(usuario!!.email) }
+        var contrasenia by remember { mutableStateOf(usuario!!.contrasenia) }
         val rolesSeleccionados = remember {
             mutableStateListOf<String>().apply {
-                addAll(usuario.roles)
+                addAll(usuario!!.roles)
             }
         }
         val error by viewModel.errorMessage.collectAsState()
@@ -125,7 +125,7 @@ fun ModificarUsuario(uid: String,viewModel: AdminViewModel = AdminViewModel()){
 
                 Button(onClick = {
                     viewModel.actualizarUsuario(
-                        usuario.copy(
+                        usuario!!.copy(
                             email = email,
                             contrasenia = contrasenia,
                             roles = rolesSeleccionados

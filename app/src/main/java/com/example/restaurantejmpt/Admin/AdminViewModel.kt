@@ -9,20 +9,25 @@ import com.example.restaurantejmpt.Model.Usuario
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlin.text.get
 
 class AdminViewModel : ViewModel() {
     private val db = FirebaseFirestore.getInstance()
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     val TAG = "Admin"
+    // Estado para el usuario que se está editando
+    private val _usuarioSeleccionado = MutableStateFlow<Usuario?>(null)
+    val usuarioSeleccionado: StateFlow<Usuario?> = _usuarioSeleccionado
 
+    fun seleccionarUsuario(usuario: Usuario) {
+        _usuarioSeleccionado.value = usuario
+    }
     val isLoading = MutableStateFlow(false)
     val errorMessage = MutableStateFlow<String?>(null)
-
     // Lista observable de usuarios
     private val _usuarios = mutableStateListOf<Usuario>()
     val usuarios: List<Usuario> = _usuarios
-
     // -------------------------------
     // Registrar un nuevo usuario con UID como documentId
     // -------------------------------

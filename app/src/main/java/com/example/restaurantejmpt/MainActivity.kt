@@ -1,5 +1,6 @@
 package com.example.restaurantejmpt
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -9,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -35,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -48,8 +51,7 @@ import com.example.restaurantejmpt.Model.Rol
 import com.example.restaurantejmpt.Model.Usuario
 
 class MainActivity : ComponentActivity() {
-    //Instancias de ViewModels compartidas
-    private val adminViewModel: AdminViewModel by viewModels()
+
     private val personaViewModel: PersonaViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,38 +60,47 @@ class MainActivity : ComponentActivity() {
         setContent {
             RestauranteJMPTTheme {
                 val navController = rememberNavController()
-                NavHost(
-                    navController = navController,
-                    startDestination = Rutas.LOGIN
-                ) {
-                    composable(Rutas.LOGIN) {
-                        LoginScreen(
-                            loginViewModel = personaViewModel,
-                            onLoginSuccess = {
-                                // Aquí usamos la lógica: si el ViewModel dice que fue exitoso,
-                                // mostramos el Toast.
-                                // el mensaje depende de qué botón pulsó el usuario.
+                val paddingValues = remember { PaddingValues(0.dp) }
 
-                                android.widget.Toast.makeText(
-                                    this@MainActivity,
-                                    "Operación realizada con éxito",
-                                    android.widget.Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        )
-                    }
-                    composable(Rutas.REGISTER) {
-                    }
-                    composable(Rutas.UPDATE + "/{uid}") { backStackEntry ->
-                        //Recupero la uid del usuario a modificar y se la mando como un parametro más
-                        val uid = backStackEntry.arguments?.getString("uid") ?: ""
-                        ModificarUsuario(uid, adminViewModel)
-                    }
-                    composable(Rutas.INSERT) {
-                        FormularioUsuario(adminViewModel)
-                    }
-                }
+                AppNavHost(
+                    navController = navController,
+                    padding = paddingValues,
+                    startRoute = Rutas.LOGIN
+                )
             }
         }
     }
 }
+
+@SuppressLint("ViewModelConstructorInComposable")
+@Composable
+fun AppNavHost(navController: NavHostController, padding: PaddingValues, startRoute: String) {
+    NavHost(
+        navController = navController,
+        startDestination = startRoute,
+        modifier = Modifier.padding(padding)
+    ) {
+        // -------------------
+        // LOGIN
+        // -------------------
+        composable(Rutas.LOGIN) {
+            LoginScreen(
+                loginViewModel = PersonaViewModel(),
+                onLoginSuccess = { rolSeleccionado ->
+                    if (rolSeleccionado == Rol.ADMIN) {
+                        navController.navigate(Rutas.ADMIN) {
+                            popUpTo(Rutas.LOGIN) { inclusive = true }
+                        }
+                    }
+                }
+            )
+        }
+        // -------------------
+        // ADMIN NAVHOST
+        // -------------------
+        composable(Rutas.ADMIN) {
+            AdminNavHost()
+        }
+    }
+}
+
