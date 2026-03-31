@@ -76,7 +76,8 @@ fun ModificarUsuario(viewModel: AdminViewModel = AdminViewModel()){
                     label = { Text("Email") },
                     isError = emailError,
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    readOnly = true
                 )
 
                 if (emailError) {

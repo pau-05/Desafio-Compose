@@ -1,5 +1,7 @@
 package com.example.restaurantejmpt.Admin
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.restaurantejmpt.Model.Rol
 import com.example.restaurantejmpt.Model.Usuario
@@ -30,6 +33,7 @@ fun FormularioUsuario(viewModel: AdminViewModel = AdminViewModel()) {
     val rolesSeleccionados = remember { mutableStateListOf<String>() }
     var emailError by remember { mutableStateOf(false) }
     var contraError by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -110,6 +114,7 @@ fun FormularioUsuario(viewModel: AdminViewModel = AdminViewModel()) {
                 contrasenia = contrasenia,
                 roles = rolesSeleccionados
             )
+            Toast.makeText(context, "Usuario creado", Toast.LENGTH_SHORT).show()
         }) {
             Text("Registrar")
         }
