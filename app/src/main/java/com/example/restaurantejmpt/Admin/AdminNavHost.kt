@@ -27,6 +27,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.restaurantejmpt.Productos.FormularioProducto
+import com.example.restaurantejmpt.Productos.ListadoProductos
+import com.example.restaurantejmpt.Productos.ModificarProducto
 import com.example.restaurantejmpt.Rutas.Rutas
 @Composable
 fun AdminNavHost() {
@@ -57,6 +60,16 @@ fun AdminNavHost() {
             }
             composable(Rutas.LISTA) {
                 Listado(adminViewModel, navController)
+            }
+            // PRODUCTOS
+            composable(Rutas.LISTA_PRODUCTOS) {
+                ListadoProductos(adminViewModel, navController)
+            }
+            composable(Rutas.INSERT_PRODUCTO) {
+                FormularioProducto(adminViewModel)
+            }
+            composable(Rutas.UPDATE_PRODUCTO) {
+                ModificarProducto(adminViewModel)
             }
         }
     }
@@ -93,30 +106,34 @@ fun BottomMenuBar(
     navController: NavHostController
 ) {
     NavigationBar {
-        // Opción: LISTADO
+        // --- SECCIÓN USUARIOS ---
         NavigationBarItem(
             selected = currentRoute == Rutas.LISTA,
-            onClick = {
-                navController.navigate(Rutas.LISTA) {
-                    popUpTo(navController.graph.startDestinationId)
-                    launchSingleTop = true
-                }
-            },
+            onClick = { navController.navigate(Rutas.LISTA) { launchSingleTop = true } },
             icon = { Icon(Icons.Default.List, null) },
             label = { Text("Usuarios") }
         )
 
-        // Opción: INSERTAR/NUEVO
         NavigationBarItem(
             selected = currentRoute == Rutas.INSERT,
-            onClick = {
-                navController.navigate(Rutas.INSERT) {
-                    popUpTo(navController.graph.startDestinationId)
-                    launchSingleTop = true
-                }
-            },
+            onClick = { navController.navigate(Rutas.INSERT) { launchSingleTop = true } },
             icon = { Icon(Icons.Default.Add, null) },
-            label = { Text("Nuevo") }
+            label = { Text("Añadir Usuario") }
+        )
+
+        // --- SECCIÓN PRODUCTOS ---
+        NavigationBarItem(
+            selected = currentRoute == Rutas.LISTA_PRODUCTOS,
+            onClick = { navController.navigate(Rutas.LISTA_PRODUCTOS) { launchSingleTop = true } },
+            icon = { Icon(Icons.AutoMirrored.Filled.List, null) },
+            label = { Text("Catálogo") }
+        )
+
+        NavigationBarItem(
+            selected = currentRoute == Rutas.INSERT_PRODUCTO,
+            onClick = { navController.navigate(Rutas.INSERT_PRODUCTO) { launchSingleTop = true } },
+            icon = { Icon(Icons.Default.Add, null) },
+            label = { Text("Añadir Producto") }
         )
     }
 }

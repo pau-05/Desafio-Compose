@@ -4,5 +4,6 @@ enum class Rol {
     ADMIN,
     CAMARERO,
     COCINERO,
-    CLIENTE
+    CLIENTE,
+    BARMAN
 }

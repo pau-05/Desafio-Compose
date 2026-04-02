@@ -116,7 +116,7 @@ fun FormularioUsuario(viewModel: AdminViewModel = AdminViewModel()) {
             )
             Toast.makeText(context, "Usuario creado", Toast.LENGTH_SHORT).show()
         }) {
-            Text("Registrar")
+            Text("iRegistrar")
         }
     }
 }

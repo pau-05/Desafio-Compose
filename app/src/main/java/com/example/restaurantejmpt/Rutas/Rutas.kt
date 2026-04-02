@@ -7,4 +7,7 @@ object Rutas {
     const val INSERT = "FormularioUsuario"
     const val LISTA = "Listado"
     const val ADMIN = "AdminNavHost"
+    const val LISTA_PRODUCTOS = "lista_productos"
+    const val INSERT_PRODUCTO = "insert_producto"
+    const val UPDATE_PRODUCTO = "update_producto"
 }
