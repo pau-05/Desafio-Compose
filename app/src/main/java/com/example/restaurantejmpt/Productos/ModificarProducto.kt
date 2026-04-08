@@ -25,9 +25,9 @@ import com.example.restaurantejmpt.Admin.AdminViewModel
 
 @Composable
 fun ModificarProducto(
-    adminViewModel: AdminViewModel
+    productoViewModel: ProductoViewModel
 ) {
-    val producto by adminViewModel.productoSeleccionado.collectAsState()
+    val producto by productoViewModel.productoSeleccionado.collectAsState()
 
     if (producto == null) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -104,7 +104,7 @@ fun ModificarProducto(
 
         Button(
             onClick = {
-                adminViewModel.actualizarProducto(
+                productoViewModel.actualizarProducto(
                     producto!!.copy(
                         nombre = nombre,
                         descripcion = descripcion,

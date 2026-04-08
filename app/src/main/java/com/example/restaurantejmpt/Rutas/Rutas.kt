@@ -10,4 +10,8 @@ object Rutas {
     const val LISTA_PRODUCTOS = "lista_productos"
     const val INSERT_PRODUCTO = "insert_producto"
     const val UPDATE_PRODUCTO = "update_producto"
+
+    const val CAMAMERO = "CamareroNavHost"
+    const val CREAR_COMANDA =  "crear_comanda"
+    const val SELECCIONAR_UBICACION =  "seleccionar_ubicacion"
 }

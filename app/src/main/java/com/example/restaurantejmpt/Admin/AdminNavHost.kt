@@ -1,5 +1,7 @@
 package com.example.restaurantejmpt.Admin
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -27,12 +29,17 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.restaurantejmpt.Model.PersonaViewModel
 import com.example.restaurantejmpt.Productos.FormularioProducto
 import com.example.restaurantejmpt.Productos.ListadoProductos
 import com.example.restaurantejmpt.Productos.ModificarProducto
+import com.example.restaurantejmpt.Productos.ProductoViewModel
 import com.example.restaurantejmpt.Rutas.Rutas
 @Composable
-fun AdminNavHost() {
+fun AdminNavHost(
+    productoViewModel: ProductoViewModel,
+    personaViewModel: PersonaViewModel
+) {
     val navController = rememberNavController()
     val adminViewModel: AdminViewModel = viewModel()
 
@@ -44,7 +51,7 @@ fun AdminNavHost() {
             )
         },
         topBar = {
-            TopDropdownMenu(navController, adminViewModel)
+            TopDropdownMenu(personaViewModel = personaViewModel)
         }
     ) { padding ->
         NavHost(
@@ -63,22 +70,24 @@ fun AdminNavHost() {
             }
             // PRODUCTOS
             composable(Rutas.LISTA_PRODUCTOS) {
-                ListadoProductos(adminViewModel, navController)
+                ListadoProductos(productoViewModel, navController)
             }
             composable(Rutas.INSERT_PRODUCTO) {
-                FormularioProducto(adminViewModel)
+                FormularioProducto(productoViewModel)
             }
             composable(Rutas.UPDATE_PRODUCTO) {
-                ModificarProducto(adminViewModel)
+                ModificarProducto(productoViewModel)
             }
         }
     }
 }
 
+@SuppressLint("ContextCastToActivity")
 @Composable
-fun TopDropdownMenu(navController: NavHostController, adminViewModel: AdminViewModel) {
+fun TopDropdownMenu(personaViewModel: PersonaViewModel) {
     var expanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val activity = LocalContext.current as Activity
 
     Box {
         IconButton(onClick = { expanded = true }) {
@@ -90,10 +99,11 @@ fun TopDropdownMenu(navController: NavHostController, adminViewModel: AdminViewM
             onDismissRequest = { expanded = false }
         ) {
             DropdownMenuItem(
-                text = { Text("Ir a Inicio (Público)") },
+                text = { Text("Cerrar sesión") },
                 onClick = {
                     expanded = false
-                    navController.navigate(Rutas.LISTA)
+                    personaViewModel.signOut(context)
+                    activity.finish()
                 }
             )
         }

@@ -1,6 +1,5 @@
 package com.example.restaurantejmpt.Productos
 
-import com.example.restaurantejmpt.Admin.AdminViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,7 +23,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun FormularioProducto(
-    adminViewModel: AdminViewModel
+    productoViewModel: ProductoViewModel
 ) {
     var nombre by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }
@@ -94,7 +93,7 @@ fun FormularioProducto(
 
         Button(
             onClick = {
-                adminViewModel.agregarProducto(
+                productoViewModel.agregarProducto(
                     nombre = nombre,
                     descripcion = descripcion,
                     precio = precio.toDoubleOrNull() ?: 0.0,

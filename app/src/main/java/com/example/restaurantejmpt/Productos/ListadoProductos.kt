@@ -1,7 +1,6 @@
 package com.example.restaurantejmpt.Productos
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -25,26 +22,24 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.restaurantejmpt.Admin.AdminViewModel
 import com.example.restaurantejmpt.Model.Producto
 import com.example.restaurantejmpt.Rutas.Rutas
 
 @Composable
 fun ListadoProductos(
-    adminViewModel: AdminViewModel,
+    productoViewModel: ProductoViewModel,
     navController: NavHostController
 ) {
     LaunchedEffect(Unit) {
-        adminViewModel.loadProductos()
+        productoViewModel.loadProductos()
     }
 
-    val todosLosProductos = adminViewModel.productos
+    val todosLosProductos = productoViewModel.productos
 
     // Filtramos las listas por tipo
     val platos = todosLosProductos.filter { it.tipo.lowercase() == "plato" }
@@ -79,10 +74,10 @@ fun ListadoProductos(
                     ProductoCard(
                         producto = producto,
                         onEditar = {
-                            adminViewModel.seleccionarProducto(producto)
+                            productoViewModel.seleccionarProducto(producto)
                             navController.navigate(Rutas.UPDATE_PRODUCTO)
                         },
-                        onEliminar = { adminViewModel.borrarProducto(producto.id) }
+                        onEliminar = { productoViewModel.borrarProducto(producto.id) }
                     )
                 }
             }
@@ -99,10 +94,10 @@ fun ListadoProductos(
                     ProductoCard(
                         producto = producto,
                         onEditar = {
-                            adminViewModel.seleccionarProducto(producto)
+                            productoViewModel.seleccionarProducto(producto)
                             navController.navigate(Rutas.UPDATE_PRODUCTO)
                         },
-                        onEliminar = { adminViewModel.borrarProducto(producto.id) }
+                        onEliminar = { productoViewModel.borrarProducto(producto.id) }
                     )
                 }
             }
