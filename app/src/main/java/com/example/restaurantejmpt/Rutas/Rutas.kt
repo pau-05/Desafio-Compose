@@ -14,4 +14,6 @@ object Rutas {
     const val CAMAMERO = "CamareroNavHost"
     const val CREAR_COMANDA =  "crear_comanda"
     const val SELECCIONAR_UBICACION =  "seleccionar_ubicacion"
+
+    const val BARMAN = "lista_comandas"
 }

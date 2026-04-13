@@ -22,13 +22,13 @@ import com.example.restaurantejmpt.Rutas.Rutas
 import com.example.restaurantejmpt.ui.theme.RestauranteJMPTTheme
 import kotlin.getValue
 import com.example.restaurantejmpt.Admin.*
+import com.example.restaurantejmpt.Barman.ListadoComandasScreen
 import com.example.restaurantejmpt.Camarero.CamareroNavHost
 import com.example.restaurantejmpt.Camarero.ComandaViewModel
 import com.example.restaurantejmpt.Model.Rol
 import com.example.restaurantejmpt.Productos.ProductoViewModel
 
 class MainActivity : ComponentActivity() {
-
     private val personaViewModel: PersonaViewModel by viewModels()
     private val productoViewModel: ProductoViewModel by viewModels()
     private val comandaViewModel: ComandaViewModel by viewModels()
@@ -86,13 +86,17 @@ fun AppNavHost(navController: NavHostController, padding: PaddingValues,
                             }
                         }
 
-                        Rol.COCINERO -> TODO()
                         Rol.CLIENTE -> TODO()
-                        Rol.BARMAN -> TODO()
+                        Rol.BARMAN -> {
+                            navController.navigate(Rutas.BARMAN) {
+                                popUpTo(Rutas.LOGIN) { inclusive = true }
+                            }
+                        }
                     }
                 }
             )
         }
+
         // -------------------
         // ADMIN
         // -------------------
@@ -109,6 +113,13 @@ fun AppNavHost(navController: NavHostController, padding: PaddingValues,
                 productoViewModel = productoViewModel,
                 comandaViewModel = comandaViewModel, personaViewModel = personaViewModel
             )
+        }
+
+        // -------------------
+        // BARMAN
+        // -------------------
+        composable(Rutas.BARMAN) {
+            ListadoComandasScreen(comandaViewModel)
         }
     }
 }

@@ -59,6 +59,8 @@
         implementation(libs.androidx.compose.foundation.layout)
         implementation(libs.androidx.navigation.runtime.ktx)
         implementation(libs.firebase.database)
+        implementation(libs.androidx.material3)
+        implementation("androidx.compose.material:material-icons-extended:1.7.8")
         //    implementation(libs.androidx.navigation.safe.args.generator)
         testImplementation(libs.junit)
         androidTestImplementation(libs.androidx.junit)
