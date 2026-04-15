@@ -22,11 +22,13 @@ import com.example.restaurantejmpt.Rutas.Rutas
 import com.example.restaurantejmpt.ui.theme.RestauranteJMPTTheme
 import kotlin.getValue
 import com.example.restaurantejmpt.Admin.*
+import com.example.restaurantejmpt.Barman.BarmanMainScreen
 import com.example.restaurantejmpt.Barman.ListadoComandasScreen
 import com.example.restaurantejmpt.Camarero.CamareroNavHost
 import com.example.restaurantejmpt.Camarero.ComandaViewModel
 import com.example.restaurantejmpt.Model.Rol
 import com.example.restaurantejmpt.Productos.ProductoViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
     private val personaViewModel: PersonaViewModel by viewModels()
@@ -119,7 +121,16 @@ fun AppNavHost(navController: NavHostController, padding: PaddingValues,
         // BARMAN
         // -------------------
         composable(Rutas.BARMAN) {
-            ListadoComandasScreen(comandaViewModel)
+            BarmanMainScreen(
+                comandaViewModel = comandaViewModel,
+                personaViewModel = personaViewModel,
+                onLogout = {
+                    FirebaseAuth.getInstance().signOut()
+                    navController.navigate(Rutas.LOGIN) {
+                        popUpTo(0)
+                    }
+                }
+            )
         }
     }
 }

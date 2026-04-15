@@ -86,6 +86,7 @@ class PersonaViewModel : ViewModel() {
                 }
             }
     }
+
     fun signOut(context: Context) {
             // 1. Cierra sesión en Firebase (esto funciona para cualquier método)
             auth.signOut()
@@ -94,7 +95,7 @@ class PersonaViewModel : ViewModel() {
             loginSuccess.value = false
             errorMessage.value = null
             isLoading.value = false
-
+            _userRoles.value = emptyList() // ¡Importante limpiar esto!
             isGoogleLogin.value = false
 
             Log.d(TAG, "Sesión cerrada correctamente")

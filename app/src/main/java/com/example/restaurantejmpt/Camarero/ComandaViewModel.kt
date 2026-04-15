@@ -58,4 +58,19 @@ class ComandaViewModel: ViewModel()  {
             Log.e(TAG, "No se pudo generar una clave única")
         }
     }
+    fun marcarComoServida(comanda: Comanda) {
+        if (comanda.id.isNotEmpty()) {
+            databaseReference
+                .child(comanda.id)
+                .child("servido")
+                .setValue(true)
+                .addOnSuccessListener {
+                    Log.d(TAG, "Comanda marcada como servida")
+                }
+                .addOnFailureListener { e ->
+                    Log.e(TAG, "Error al actualizar comanda", e)
+                }
+        }
+    }
+
 }

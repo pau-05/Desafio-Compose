@@ -54,11 +54,9 @@ import java.util.Locale
 fun ListadoComandasScreen(
     comandaViewModel: ComandaViewModel
 ) {
-    //Traemos todas las comandas y filtramos por las que no estén servidas
     val todasLasComandas by comandaViewModel.comandas.collectAsState()
     val comandas = todasLasComandas.filter { !it.servido }
     val snackbarHostState = remember { SnackbarHostState() }
-    //val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -87,7 +85,12 @@ fun ListadoComandasScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(Icons.Default.Receipt, contentDescription = null, modifier = Modifier.size(64.dp), tint = Color.Gray)
+                    Icon(
+                        Icons.Default.Receipt,
+                        contentDescription = null,
+                        modifier = Modifier.size(64.dp),
+                        tint = Color.Gray
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text("No hay comandas pendientes", color = Color.Gray)
                 }
@@ -102,7 +105,7 @@ fun ListadoComandasScreen(
                     ComandaCard(
                         comanda = comanda,
                         onServirClick = {
-                            //Para futura actualización
+                            comandaViewModel.marcarComoServida(comanda)
                         }
                     )
                 }
@@ -113,14 +116,22 @@ fun ListadoComandasScreen(
 
 @SuppressLint("DefaultLocale")
 @Composable
-fun ComandaCard(comanda: Comanda, onServirClick: () -> Unit) {
+fun ComandaCard(
+    comanda: Comanda,
+    onServirClick: () -> Unit
+) {
+    val esServida = comanda.servido
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0))
+        colors = CardDefaults.cardColors(
+            containerColor = if (esServida) Color(0xFFE0E0E0) else Color(0xFFFFF3E0)
+        )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            //Cabecera
+
+            // Cabecera
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -139,7 +150,7 @@ fun ComandaCard(comanda: Comanda, onServirClick: () -> Unit) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            //Productos
+            // Productos
             comanda.productos.forEach { producto ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -152,16 +163,20 @@ fun ComandaCard(comanda: Comanda, onServirClick: () -> Unit) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            //Total
+            // Total
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text("Total:", fontWeight = FontWeight.Bold)
-                Text("${comanda.total} €", fontWeight = FontWeight.Bold, color = Color(0xFF4CAF50))
+                Text(
+                    "${comanda.total} €",
+                    fontWeight = FontWeight.Bold,
+                    color = if (esServida) Color.DarkGray else Color(0xFF4CAF50)
+                )
             }
 
-            //Ubicación
+            // Ubicación
             if (comanda.ubicacionLat != 0.0 || comanda.ubicacionLng != 0.0) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -173,14 +188,31 @@ fun ComandaCard(comanda: Comanda, onServirClick: () -> Unit) {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Button(
-                onClick = onServirClick,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
-            ) {
-                Icon(Icons.Default.Done, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Marcar como servida")
+            if (!esServida) {
+                // Comanda no Servida
+                Button(
+                    onClick = onServirClick,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
+                ) {
+                    Icon(Icons.Default.Done, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Marcar como servida")
+                }
+            } else {
+                // Comanda Servida"
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "✔ Servida",
+                        fontWeight = FontWeight.Bold,
+                        color = Color.DarkGray
+                    )
+                }
             }
         }
     }
