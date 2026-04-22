@@ -127,6 +127,7 @@ fun LoginScreen(
                                 onClick = {
                                     showRoleDialog = false
                                     onLoginSuccess(rol) //  aquí navegamos
+                                    loginViewModel.setCurrentRole(rol) //seteamos como se ha inciado sesión
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()

@@ -24,10 +24,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.restaurantejmpt.Admin.TopDropdownMenu
-import com.example.restaurantejmpt.Login.LoginScreen
+import com.example.restaurantejmpt.Components.TopDropdownMenu
 import com.example.restaurantejmpt.Model.PersonaViewModel
 import com.example.restaurantejmpt.Productos.ProductoViewModel
 
@@ -39,7 +37,8 @@ fun CamareroNavHost(
     camareroId: String,
     productoViewModel: ProductoViewModel,
     comandaViewModel: ComandaViewModel,
-    personaViewModel: PersonaViewModel
+    personaViewModel: PersonaViewModel,
+    onLogout: () -> Unit
 ) {
     val navController = rememberNavController()
     val ubicacionViewModel: MapsViewModel = viewModel()
@@ -47,7 +46,10 @@ fun CamareroNavHost(
     Scaffold (
         modifier = Modifier.systemBarsPadding(),
         topBar = {
-            TopDropdownMenuCamarero(personaViewModel)
+            TopDropdownMenu(
+                personaViewModel,
+                onLogout = onLogout
+            )
         }
     ){ paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
@@ -76,34 +78,6 @@ fun CamareroNavHost(
                     )
                 }
             }
-        }
-    }
-}
-
-@SuppressLint("ContextCastToActivity")
-@Composable
-fun TopDropdownMenuCamarero(personaViewModel: PersonaViewModel) {
-    var expanded by remember { mutableStateOf(false) }
-    val context = LocalContext.current
-    val activity = LocalContext.current as Activity
-
-    Box {
-        IconButton(onClick = { expanded = true }) {
-            Icon(Icons.Default.MoreVert, contentDescription = "Menú")
-        }
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            DropdownMenuItem(
-                text = { Text("Cerrar sesión") },
-                onClick = {
-                    expanded = false
-                    personaViewModel.signOut(context)
-                    activity.finish()
-                }
-            )
         }
     }
 }

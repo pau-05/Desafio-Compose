@@ -22,19 +22,30 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.restaurantejmpt.Model.PersonaViewModel
 import com.example.restaurantejmpt.Model.Producto
+import com.example.restaurantejmpt.Model.Rol
 import com.example.restaurantejmpt.Rutas.Rutas
 
 @Composable
 fun ListadoProductos(
     productoViewModel: ProductoViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    personaViewModel: PersonaViewModel
 ) {
+    //Obtiene el rol con el que se ha iniciado sesión
+    val rol by personaViewModel.currentRole.collectAsState()
+
+    //Booleano que nos indicará si tendrá los permisos de edición o no
+    val isAdmin = rol == Rol.ADMIN
+
     LaunchedEffect(Unit) {
         productoViewModel.loadProductos()
     }
@@ -51,7 +62,7 @@ fun ListadoProductos(
             .padding(16.dp)
     ) {
         Text(
-            text = "Gestión de Inventario",
+            text = "Catálogo de productos",
             style = androidx.compose.material3.MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
         )
@@ -77,7 +88,8 @@ fun ListadoProductos(
                             productoViewModel.seleccionarProducto(producto)
                             navController.navigate(Rutas.UPDATE_PRODUCTO)
                         },
-                        onEliminar = { productoViewModel.borrarProducto(producto.id) }
+                        onEliminar = { productoViewModel.borrarProducto(producto.id) },
+                        isAdmin
                     )
                 }
             }
@@ -97,7 +109,8 @@ fun ListadoProductos(
                             productoViewModel.seleccionarProducto(producto)
                             navController.navigate(Rutas.UPDATE_PRODUCTO)
                         },
-                        onEliminar = { productoViewModel.borrarProducto(producto.id) }
+                        onEliminar = { productoViewModel.borrarProducto(producto.id) },
+                        isAdmin
                     )
                 }
             }
@@ -132,7 +145,8 @@ fun SeccionHeader(titulo: String) {
 fun ProductoCard(
     producto: Producto,
     onEditar: () -> Unit,
-    onEliminar: () -> Unit
+    onEliminar: () -> Unit,
+    isAdmin: Boolean
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -168,22 +182,21 @@ fun ProductoCard(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                IconButton(onClick = onEditar) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Editar"
-                    )
-                }
+            if (isAdmin) {
+                HorizontalDivider()
 
-                IconButton(onClick = onEliminar) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Eliminar"
-                    )
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    IconButton(onClick = onEditar) {
+                        Icon(Icons.Default.Edit, "Editar")
+                    }
+
+                    IconButton(onClick = onEliminar) {
+                        Icon(Icons.Default.Delete, "Eliminar")
+                    }
                 }
             }
         }
