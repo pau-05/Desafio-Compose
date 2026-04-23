@@ -1,6 +1,7 @@
 package com.example.restaurantejmpt.Camarero
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -43,10 +44,16 @@ fun CrearComandaScreen(
     var isLoading by remember { mutableStateOf(false) }
     val isLoadingCatalogo by productoViewModel.isLoading.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val comandaSeleccionada by comandaViewModel.comandaSeleccionada.collectAsState()
     val scope = rememberCoroutineScope()
+    // Estado para saber si estamos editando
+    val isEditing = comandaSeleccionada != null
 
     //Observar ubicación seleccionada desde el ViewModel
     val ubicacion by ubicacionViewModel.ubicacionSeleccionada.collectAsState()
+
+    //Estado para el estado de la comanda (solo visible en edición)
+    var estadoServido by remember { mutableStateOf(false) }
 
     //Cargar productos
     LaunchedEffect(Unit) {
@@ -55,10 +62,33 @@ fun CrearComandaScreen(
     //Variable donde se van a guardar los productos
     val productosCatalogo = productoViewModel.productos
 
-    //Función para crear comanda
-    fun crearComanda() {
+    //Cargar datos de la comanda seleccionada cuando se entra en modo edición
+    LaunchedEffect(comandaSeleccionada) {
+        if (comandaSeleccionada != null) {
+            // Convertir la lista de productos a seleccion (Map<productoId, cantidad>)
+            val seleccionMap = comandaSeleccionada!!.productos.associate {
+                it.productoId to it.cantidad
+            }
+            seleccion = seleccionMap
+
+            estadoServido = comandaSeleccionada!!.servido
+
+            // Cargar ubicación si existe
+            if (comandaSeleccionada!!.ubicacionLat != 0.0 || comandaSeleccionada!!.ubicacionLng != 0.0) {
+                ubicacionViewModel.actualizarUbicacion(
+                    com.google.android.gms.maps.model.LatLng(
+                        comandaSeleccionada!!.ubicacionLat,
+                        comandaSeleccionada!!.ubicacionLng
+                    )
+                )
+            }
+        }
+    }
+
+    // Función para crear o actualizar comanda
+    fun guardarComanda() {
         scope.launch {
-            //Validaciones
+            // Validaciones
             if (seleccion.isEmpty()) {
                 snackbarHostState.showSnackbar("Selecciona al menos un producto")
                 return@launch
@@ -71,7 +101,7 @@ fun CrearComandaScreen(
             isLoading = true
 
             try {
-                //Construir lista de productos de la comanda
+                // Construir lista de productos de la comanda
                 val productosComanda = seleccion.mapNotNull { (productoId, cantidad) ->
                     val producto = productosCatalogo.find { it.id == productoId }
                     producto?.let {
@@ -87,22 +117,39 @@ fun CrearComandaScreen(
 
                 val total = productosComanda.sumOf { it.subtotal }
 
-                val comanda = Comanda(
-                    servido = false,
-                    fechaHora = System.currentTimeMillis(),
-                    ubicacionLat = ubicacion!!.latitude,
-                    ubicacionLng = ubicacion!!.longitude,
-                    productos = productosComanda,
-                    total = total,
-                    camareroId = camareroId
-                )
+                if (isEditing) {
+                    //Modo edición: actualiza comanda existente
+                    val comandaActualizada = comandaSeleccionada!!.copy(
+                        servido = false,  //Al actualizar, sigue pendiente
+                        fechaHora = System.currentTimeMillis(),  //Actualizar fecha/hora
+                        ubicacionLat = ubicacion!!.latitude,
+                        ubicacionLng = ubicacion!!.longitude,
+                        productos = productosComanda,
+                        total = total,
+                        camareroId = camareroId
+                    )
+                    comandaViewModel.updateComanda(comandaActualizada)
+                    snackbarHostState.showSnackbar("Comanda actualizada correctamente")
 
-                //Guardar en Realtime Firebase
-                comandaViewModel.sendComanda(comanda)
+                } else {
+                    //Modo creación: crea nueva comanda
+                    val comanda = Comanda(
+                        servido = estadoServido,
+                        fechaHora = System.currentTimeMillis(),
+                        ubicacionLat = ubicacion!!.latitude,
+                        ubicacionLng = ubicacion!!.longitude,
+                        productos = productosComanda,
+                        total = total,
+                        camareroId = camareroId
+                    )
+                    comandaViewModel.sendComanda(comanda)
+                    snackbarHostState.showSnackbar("Comanda creada correctamente")
+                }
 
                 //Limpiar selección y ubicación
                 seleccion = emptyMap()
                 ubicacionViewModel.limpiarUbicacion()
+                comandaViewModel.limpiarComandaSeleccionada()
 
             } catch (e: Exception) {
                 snackbarHostState.showSnackbar("Error: ${e.message}")
@@ -115,7 +162,7 @@ fun CrearComandaScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Nueva Comanda") },
+                title = { Text(if (isEditing) "Editar Comanda" else "Nueva Comanda") },
                 actions = {
                     //Badge con número de productos seleccionados
                     BadgedBox(
@@ -163,6 +210,7 @@ fun CrearComandaScreen(
                         }
                     }
                 }
+
                 productosCatalogo.isEmpty() -> {
                     Box(
                         modifier = Modifier
@@ -173,6 +221,7 @@ fun CrearComandaScreen(
                         Text("No hay productos disponibles")
                     }
                 }
+
                 else -> {
                     LazyColumn(
                         modifier = Modifier.weight(1f),
@@ -195,7 +244,74 @@ fun CrearComandaScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            //Tarjeta de estado (SOLO visible en edición)
+            if (isEditing) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    )
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "Estado de la comanda",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            // RadioButton para "Pendiente"
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .clickable { estadoServido = false }
+                                    .padding(8.dp)
+                            ) {
+                                RadioButton(
+                                    selected = !estadoServido,
+                                    onClick = { estadoServido = false },
+                                    colors = RadioButtonDefaults.colors(
+                                        selectedColor = Color(0xFFFF9800)
+                                    )
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Pendiente",
+                                    color = if (!estadoServido) Color(0xFFFF9800) else Color.Gray
+                                )
+                            }
+
+                            //RadioButton para "Servida"
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .clickable { estadoServido = true }
+                                    .padding(8.dp)
+                            ) {
+                                RadioButton(
+                                    selected = estadoServido,
+                                    onClick = { estadoServido = true },
+                                    colors = RadioButtonDefaults.colors(
+                                        selectedColor = Color(0xFF4CAF50)
+                                    )
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Servida",
+                                    color = if (estadoServido) Color(0xFF4CAF50) else Color.Gray
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+            }
 
             //Tarjeta de ubicación
             Card(
@@ -224,7 +340,12 @@ fun CrearComandaScreen(
                                     Text("Mesa seleccionada", color = Color.Green)
                                 }
                                 Text(
-                                    text = "Lat: ${String.format("%.4f", ubicacion!!.latitude)}, Lng: ${String.format("%.4f", ubicacion!!.longitude)}",
+                                    text = "Lat: ${
+                                        String.format(
+                                            "%.4f",
+                                            ubicacion!!.latitude
+                                        )
+                                    }, Lng: ${String.format("%.4f", ubicacion!!.longitude)}",
                                     fontSize = 12.sp,
                                     color = Color.Gray
                                 )
@@ -248,7 +369,7 @@ fun CrearComandaScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            //Resumen de selección
+            //Resumen de la selección
             if (seleccion.isNotEmpty()) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -270,9 +391,9 @@ fun CrearComandaScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            //Botón crear comanda
+            //Botón guardar/actualizar
             Button(
-                onClick = { crearComanda() },
+                onClick = { guardarComanda() },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = seleccion.isNotEmpty() && ubicacion != null && !isLoading,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))
@@ -280,9 +401,9 @@ fun CrearComandaScreen(
                 if (isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White)
                 } else {
-                    Icon(Icons.Default.Send, contentDescription = null)
+                    Icon(Icons.Default.Save, contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Crear comanda")
+                    Text(if (isEditing) "Actualizar comanda" else "Crear comanda")
                 }
             }
         }

@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import com.example.restaurantejmpt.Camarero.ComandaViewModel
 import com.example.restaurantejmpt.Model.PersonaViewModel
 import kotlinx.coroutines.launch
@@ -22,6 +23,7 @@ fun BarmanMainScreen(
     personaViewModel: PersonaViewModel,
     onLogout: () -> Unit
 ) {
+    val navController = rememberNavController()
     val context = LocalContext.current
     var pantallaActual by remember { mutableStateOf(PantallaBarman.EN_PROCESO) }
 
@@ -95,10 +97,17 @@ fun BarmanMainScreen(
             Box(modifier = Modifier.padding(paddingValues)) {
                 when (pantallaActual) {
                     PantallaBarman.EN_PROCESO -> {
-                        ListadoComandasScreen(comandaViewModel)
+                        ListadoComandasScreen(comandaViewModel,
+                            personaViewModel = personaViewModel,
+                            navController = navController
+                        )
                     }
                     PantallaBarman.SERVIDAS -> {
-                        ComandasServidasScreen(comandaViewModel)
+                        ComandasServidasScreen(
+                            comandaViewModel,
+                            personaViewModel = personaViewModel,
+                            navController = navController
+                        )
                     }
                 }
             }
