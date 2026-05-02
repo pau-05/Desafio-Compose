@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.example.restaurantejmpt.Colecciones
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -33,6 +34,14 @@ class PersonaViewModel : ViewModel() {
     val loginSuccess = MutableStateFlow(false)
     val isGoogleLogin = MutableStateFlow(false)
 
+    //Consulta el rol con el que se ha iniciado la sesión
+    private val _currentRole = MutableStateFlow<Rol?>(null)
+    val currentRole: StateFlow<Rol?> = _currentRole
+
+    fun setCurrentRole(rol: Rol) {
+        _currentRole.value = rol
+    }
+
     val isUserLoggedIn: Boolean
         get() = auth.currentUser != null
 
@@ -54,7 +63,7 @@ class PersonaViewModel : ViewModel() {
                         )
 
                     //Creacion de la coleccion de usuarios
-                    db.collection("usuarios") // Esta es la colección que busca tu función obtenerTodosLosUsuarios
+                    db.collection(Colecciones.USERS)
                         .document(uid)
                         .set(nuevaPersona)
                         .addOnSuccessListener {
@@ -80,7 +89,12 @@ class PersonaViewModel : ViewModel() {
             .addOnCompleteListener { task ->
                 isLoading.value = false
                 if (task.isSuccessful) {
-                    obtenerRolesUsuario()
+                    val uid = getCurrentUser()?.uid
+                    //Para evitar delay solo se llama al afunción una vez
+                    //firebase haya devuelto el usuario
+                    if (uid != null) {
+                        obtenerRolesUsuario(uid)
+                    }
                 } else {
                     errorMessage.value = task.exception?.message
                 }
@@ -95,20 +109,17 @@ class PersonaViewModel : ViewModel() {
             loginSuccess.value = false
             errorMessage.value = null
             isLoading.value = false
-            _userRoles.value = emptyList() // ¡Importante limpiar esto!
+            _userRoles.value = emptyList()
             isGoogleLogin.value = false
 
             Log.d(TAG, "Sesión cerrada correctamente")
     }
-    fun obtenerRolesUsuario() {
-        val uid = auth.currentUser?.uid ?: return
-        db.collection("usuarios")
+    fun obtenerRolesUsuario(uid: String) {
+        db.collection(Colecciones.USERS)
             .document(uid)
             .get()
             .addOnSuccessListener { document ->
-
                 if (document.exists()) {
-
                     val rolesString = document.get("roles") as? List<*> ?: emptyList<Any>()
 
                     val rolesConvertidos = rolesString.mapNotNull { nombre ->

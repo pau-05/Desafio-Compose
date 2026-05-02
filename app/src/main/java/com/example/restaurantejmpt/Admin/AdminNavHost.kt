@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
@@ -29,6 +30,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.restaurantejmpt.Components.TopDropdownMenu
 import com.example.restaurantejmpt.Model.PersonaViewModel
 import com.example.restaurantejmpt.Productos.FormularioProducto
 import com.example.restaurantejmpt.Productos.ListadoProductos
@@ -38,7 +40,8 @@ import com.example.restaurantejmpt.Rutas.Rutas
 @Composable
 fun AdminNavHost(
     productoViewModel: ProductoViewModel,
-    personaViewModel: PersonaViewModel
+    personaViewModel: PersonaViewModel,
+    onLogout: () -> Unit
 ) {
     val navController = rememberNavController()
     val adminViewModel: AdminViewModel = viewModel()
@@ -50,8 +53,9 @@ fun AdminNavHost(
                 navController = navController
             )
         },
+        modifier = Modifier.systemBarsPadding(),
         topBar = {
-            TopDropdownMenu(personaViewModel = personaViewModel)
+            TopDropdownMenu(personaViewModel = personaViewModel, onLogout = onLogout)
         }
     ) { padding ->
         NavHost(
@@ -70,7 +74,7 @@ fun AdminNavHost(
             }
             // PRODUCTOS
             composable(Rutas.LISTA_PRODUCTOS) {
-                ListadoProductos(productoViewModel, navController)
+                ListadoProductos(productoViewModel, navController, personaViewModel = personaViewModel)
             }
             composable(Rutas.INSERT_PRODUCTO) {
                 FormularioProducto(productoViewModel)
@@ -78,34 +82,6 @@ fun AdminNavHost(
             composable(Rutas.UPDATE_PRODUCTO) {
                 ModificarProducto(productoViewModel)
             }
-        }
-    }
-}
-
-@SuppressLint("ContextCastToActivity")
-@Composable
-fun TopDropdownMenu(personaViewModel: PersonaViewModel) {
-    var expanded by remember { mutableStateOf(false) }
-    val context = LocalContext.current
-    val activity = LocalContext.current as Activity
-
-    Box {
-        IconButton(onClick = { expanded = true }) {
-            Icon(Icons.Default.MoreVert, contentDescription = "Menú")
-        }
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            DropdownMenuItem(
-                text = { Text("Cerrar sesión") },
-                onClick = {
-                    expanded = false
-                    personaViewModel.signOut(context)
-                    activity.finish()
-                }
-            )
         }
     }
 }

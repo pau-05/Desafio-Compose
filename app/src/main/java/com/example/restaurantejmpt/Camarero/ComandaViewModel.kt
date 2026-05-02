@@ -26,6 +26,18 @@ class ComandaViewModel: ViewModel()  {
     private val _comandas = MutableStateFlow<List<Comanda>>(emptyList())
     val comandas: StateFlow<List<Comanda>> get() = _comandas
 
+    //Para la edición de comandas
+    private val _comandaSeleccionada = MutableStateFlow<Comanda?>(null)
+    val comandaSeleccionada: StateFlow<Comanda?> = _comandaSeleccionada
+
+    fun seleccionarComanda(comanda: Comanda) {
+        _comandaSeleccionada.value = comanda
+    }
+
+    fun limpiarComandaSeleccionada() {
+        _comandaSeleccionada.value = null
+    }
+
     init {
         observeComandas()
     }
@@ -73,4 +85,31 @@ class ComandaViewModel: ViewModel()  {
         }
     }
 
+    //Función que actualiza la comanda entera
+    fun updateComanda(comanda: Comanda) {
+        if (comanda.id.isNotEmpty()) {
+            databaseReference
+                .child(comanda.id)
+                .setValue(comanda)
+                .addOnSuccessListener {
+                    Log.d(TAG, "Comanda actualizada correctamente")
+                }
+                .addOnFailureListener { e ->
+                    Log.e(TAG, "Error al actualizar comanda", e)
+                }
+        }
+    }
+
+    //Borrado de comanda
+    fun deleteComanda(comandaId: String) {
+        databaseReference
+            .child(comandaId)
+            .removeValue()
+            .addOnSuccessListener {
+                Log.d(TAG, "Comanda eliminada")
+            }
+            .addOnFailureListener { e ->
+                Log.e(TAG, "Error al eliminar comanda", e)
+            }
+    }
 }

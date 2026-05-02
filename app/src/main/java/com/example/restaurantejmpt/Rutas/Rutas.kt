@@ -3,6 +3,7 @@ package com.example.restaurantejmpt.Rutas
 object Rutas {
     const val LOGIN = "login"
     const val REGISTER = "register"
+    const val LOGOUT = "salir"
     const val UPDATE = "ModificarUsuario"
     const val INSERT = "FormularioUsuario"
     const val LISTA = "Listado"
@@ -14,6 +15,8 @@ object Rutas {
     const val CAMAMERO = "CamareroNavHost"
     const val CREAR_COMANDA =  "crear_comanda"
     const val SELECCIONAR_UBICACION =  "seleccionar_ubicacion"
+    const val LISTADO_COMANDAS =  "listado_comandas"
+    const val COMANDAS_SERVIDAS =  "comandas_servidas"
 
     const val BARMAN = "lista_comandas"
 }

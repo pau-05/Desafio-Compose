@@ -23,9 +23,9 @@ import com.example.restaurantejmpt.ui.theme.RestauranteJMPTTheme
 import kotlin.getValue
 import com.example.restaurantejmpt.Admin.*
 import com.example.restaurantejmpt.Barman.BarmanMainScreen
-import com.example.restaurantejmpt.Barman.ListadoComandasScreen
 import com.example.restaurantejmpt.Camarero.CamareroNavHost
 import com.example.restaurantejmpt.Camarero.ComandaViewModel
+import com.example.restaurantejmpt.Cliente.ClienteNavHost
 import com.example.restaurantejmpt.Model.Rol
 import com.example.restaurantejmpt.Productos.ProductoViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -88,7 +88,12 @@ fun AppNavHost(navController: NavHostController, padding: PaddingValues,
                             }
                         }
 
-                        Rol.CLIENTE -> TODO()
+                        Rol.CLIENTE -> {
+                            navController.navigate(Rutas.LISTA_PRODUCTOS) {
+                                popUpTo(Rutas.LOGIN) { inclusive = true }
+                            }
+                        }
+
                         Rol.BARMAN -> {
                             navController.navigate(Rutas.BARMAN) {
                                 popUpTo(Rutas.LOGIN) { inclusive = true }
@@ -103,7 +108,14 @@ fun AppNavHost(navController: NavHostController, padding: PaddingValues,
         // ADMIN
         // -------------------
         composable(Rutas.ADMIN) {
-            AdminNavHost(productoViewModel = productoViewModel, personaViewModel= personaViewModel)
+            AdminNavHost(productoViewModel = productoViewModel, personaViewModel= personaViewModel,
+                onLogout = {
+                    FirebaseAuth.getInstance().signOut()
+                    navController.navigate(Rutas.LOGIN) {
+                        popUpTo(0)
+                    }
+                }
+            )
         }
 
         // -------------------
@@ -113,7 +125,13 @@ fun AppNavHost(navController: NavHostController, padding: PaddingValues,
             val usuario = personaViewModel.getCurrentUser()
             if (usuario!= null) CamareroNavHost(camareroId = usuario.uid,
                 productoViewModel = productoViewModel,
-                comandaViewModel = comandaViewModel, personaViewModel = personaViewModel
+                comandaViewModel = comandaViewModel, personaViewModel = personaViewModel,
+                onLogout = {
+                    FirebaseAuth.getInstance().signOut()
+                    navController.navigate(Rutas.LOGIN) {
+                        popUpTo(0)
+                    }
+                }
             )
         }
 
@@ -124,6 +142,20 @@ fun AppNavHost(navController: NavHostController, padding: PaddingValues,
             BarmanMainScreen(
                 comandaViewModel = comandaViewModel,
                 personaViewModel = personaViewModel,
+                onLogout = {
+                    FirebaseAuth.getInstance().signOut()
+                    navController.navigate(Rutas.LOGIN) {
+                        popUpTo(0)
+                    }
+                }
+            )
+        }
+
+        // -------------------
+        // CLIENTE
+        // -------------------
+        composable(Rutas.LISTA_PRODUCTOS) {
+            ClienteNavHost(productoViewModel, personaViewModel,
                 onLogout = {
                     FirebaseAuth.getInstance().signOut()
                     navController.navigate(Rutas.LOGIN) {
