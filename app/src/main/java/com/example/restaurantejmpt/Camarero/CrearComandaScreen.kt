@@ -203,7 +203,7 @@ fun CrearComandaScreen(
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Ubicación de la mesa", fontWeight = FontWeight.Bold)
+                    Text("Ubicacion de la comanda", fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(8.dp))
 
                     if (ubicacion != null) {
