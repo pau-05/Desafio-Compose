@@ -23,6 +23,7 @@ roomKtx = "2.8.4"
 navigationRuntimeKtx = "2.9.7"
 firebaseStorageKtx = "22.0.1"
 firebaseDatabase = "22.0.1"
+uiVersion = "1.11.1"
 
 [libraries]
 androidx-compose-material3-v132 = { module = "androidx.compose.material3:material3", version.ref = "material3Version" }
@@ -55,6 +56,7 @@ androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = 
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
 firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
+ui = { group = "androidx.compose.ui", name = "ui", version.ref = "uiVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

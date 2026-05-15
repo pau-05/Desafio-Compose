@@ -65,7 +65,7 @@ class ProductoViewModel: ViewModel()  {
         descripcion: String,
         precio: Double,
         tipo: String,
-        imagenUrl: String = ""
+        imagenUrl: String
     ) {
         _isLoading.value = true
         errorMessage.value = null

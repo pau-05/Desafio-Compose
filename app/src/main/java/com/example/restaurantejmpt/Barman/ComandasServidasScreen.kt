@@ -64,19 +64,8 @@ fun ComandasServidasScreen(
                     ComandaCard(
                         comanda = comanda,
                         onServirClick = {},
-                        onClick = {
-                            //Navegar a la edición de la comanda solo si es camarero
-                            if (isCamarero) {
-                                comandaViewModel.seleccionarComanda(comanda)
-                                navController.navigate(Rutas.CREAR_COMANDA)
-                            }
-                        },
-                        onLongClick = {
-                            //Click largo -> borrar (solo si es camarero)
-                            if (isCamarero) {
-                                comandaAEliminar = comanda
-                            }
-                        },
+                        onClick = {},
+                        onLongClick = {},
                         mostrarBotonBorrar = isCamarero
                     )
                 }

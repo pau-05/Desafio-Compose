@@ -97,7 +97,7 @@ fun ListadoComandasScreen(
                         },
                         onClick = {
                             // Navegar a la edición de la comanda solo si es camarero
-                            if (isCamarero) {
+                            if (isCamarero && !comanda.servido) {
                                 comandaViewModel.seleccionarComanda(comanda)
                                 navController.navigate(Rutas.CREAR_COMANDA)
                             }

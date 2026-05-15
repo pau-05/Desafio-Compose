@@ -39,9 +39,12 @@
         }
         buildFeatures {
             compose = true
+            buildConfig = true
         }
     }
     dependencies {
+        implementation("io.coil-kt:coil-compose:2.5.0")
+        implementation("androidx.activity:activity-compose:1.8.2")
         implementation(libs.androidx.core.ktx)
         implementation(libs.androidx.lifecycle.runtime.ktx)
         implementation(libs.androidx.activity.compose)
@@ -61,6 +64,7 @@
         implementation(libs.firebase.database)
         implementation(libs.androidx.material3)
         implementation("androidx.compose.material:material-icons-extended:1.7.8")
+        implementation(libs.ui)
         //    implementation(libs.androidx.navigation.safe.args.generator)
         testImplementation(libs.junit)
         androidTestImplementation(libs.androidx.junit)

@@ -1,35 +1,57 @@
 package com.example.restaurantejmpt.Productos
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import androidx.activity.compose.rememberLauncherForActivityResult
+import coil.compose.AsyncImage
+import androidx.compose.ui.draw.clip
 
 @Composable
 fun FormularioProducto(
     productoViewModel: ProductoViewModel
 ) {
+
     var nombre by remember { mutableStateOf("") }
     var descripcion by remember { mutableStateOf("") }
     var precio by remember { mutableStateOf("") }
     var tipo by remember { mutableStateOf("plato") }
+
+    // Aquí guardaremos la URI
     var imagenUrl by remember { mutableStateOf("") }
+
+
+    // Launcher GALERÍA
+    val launcherGaleria =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent()
+        ) { uri: Uri? ->
+
+            uri?.let {
+                imagenUrl = it.toString()
+            }
+        }
+
+    // Launcher CÁMARA
+    val launcherCamara =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.TakePicturePreview()
+        ) { bitmap ->
+
+            // Esta opción devuelve Bitmap
+            // Para simplificar:
+            // usa mejor galería si quieres persistencia
+        }
 
     Column(
         modifier = Modifier
@@ -37,6 +59,7 @@ fun FormularioProducto(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
+
         Text(text = "Añadir Producto")
 
         OutlinedTextField(
@@ -60,16 +83,45 @@ fun FormularioProducto(
             modifier = Modifier.fillMaxWidth()
         )
 
-        OutlinedTextField(
-            value = imagenUrl,
-            onValueChange = { imagenUrl = it },
-            label = { Text("Imagen (String / URL opcional)") },
-            modifier = Modifier.fillMaxWidth()
-        )
+        if (imagenUrl.isNotEmpty()) {
+
+            AsyncImage(
+                model = imagenUrl,
+                contentDescription = "Imagen seleccionada",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .clip(RoundedCornerShape(12.dp)),
+                contentScale = ContentScale.Crop
+            )
+        }
+
+        // BOTONES
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+
+            Button(
+                onClick = {
+                    launcherGaleria.launch("image/*")
+                }
+            ) {
+                Text("Galería")
+            }
+
+            Button(
+                onClick = {
+                    launcherCamara.launch(null)
+                }
+            ) {
+                Text("Cámara")
+            }
+        }
 
         Text(text = "Tipo de producto")
 
         Row {
+
             Row {
                 RadioButton(
                     selected = tipo == "plato",
@@ -93,6 +145,7 @@ fun FormularioProducto(
 
         Button(
             onClick = {
+
                 productoViewModel.agregarProducto(
                     nombre = nombre,
                     descripcion = descripcion,
