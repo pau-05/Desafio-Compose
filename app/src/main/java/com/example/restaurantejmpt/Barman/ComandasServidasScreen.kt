@@ -76,7 +76,8 @@ fun ComandasServidasScreen(
                             if (isCamarero) {
                                 comandaAEliminar = comanda
                             }
-                        }
+                        },
+                        mostrarBotonBorrar = isCamarero
                     )
                 }
             }

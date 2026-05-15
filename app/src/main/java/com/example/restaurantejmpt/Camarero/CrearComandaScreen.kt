@@ -472,7 +472,7 @@ fun ProductoItem(
                     onClick = { if (cantidad > 0) onCantidadChange(cantidad - 1) },
                     enabled = cantidad > 0
                 ) {
-                    Icon(Icons.Default.Delete, contentDescription = "Quitar")
+                    Icon(Icons.Default.Remove, contentDescription = "Quitar")
                 }
 
                 Text(
