@@ -79,4 +79,7 @@
         implementation("com.google.maps.android:maps-compose:2.11.2")
         implementation("com.google.android.gms:play-services-location:21.3.0")
         implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
+
+        //storage
+        implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
     }
