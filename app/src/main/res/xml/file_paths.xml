@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Para archivos temporales en caché -->
+    <cache-path name="cache" path="." />
+    <cache-path name="cache_temp_photos" path="temp_photos/" />
+
+    <!-- Para archivos internos -->
+    <files-path name="files" path="." />
+</paths>

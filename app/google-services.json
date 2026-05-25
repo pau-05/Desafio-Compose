@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "140506498817",
+    "project_id": "restaurantejmpt",
+    "storage_bucket": "restaurantejmpt.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:140506498817:android:1359e20c8865b226bebd00",
+        "android_client_info": {
+          "package_name": "com.example.restaurantejmpt"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "140506498817-bcfv548avc69u3g7f3aopbfa92h7l9nn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_4BrwZEDASiEw_Af6eiAJ7QbEYJ9Mosk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "140506498817-bcfv548avc69u3g7f3aopbfa92h7l9nn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
